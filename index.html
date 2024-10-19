@@ -15,8 +15,8 @@
             <div v-if="screen == 'form'" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl">
                 <div class="mb-4 space-y-2">
                     <div class="flex items-center justify-between gap-2">
-                        <div class="h-24 overflow-hidden object-cover">
-                            <img src="https://lh3.googleusercontent.com/p/AF1QipPCgnQa4n4rLRsptJjPpp1RD1xHw4p9ZeBkOrY=s1360-w1360-h1020" class="h-full w-auto scale-150 ml-6" alt="" />
+                        <div class="h-12 overflow-hidden object-cover">
+                            <img src="./Asset/W.png" class="h-9 w-auto scale-150 ml-6" alt="" />
                         </div>
                         <h1 class="text-2xl font-bold text-center text-slate-800">Quotation Form</h1>
                         <div class="space-y-2">
@@ -203,8 +203,8 @@
             <div v-if="screen == 'preview'" class="bg-white rounded-lg shadow-xl print:shadow-none p-6 w-full max-w-4xl print:size-full">
                 <div class="mb-4 space-y-2">
                     <div class="flex items-center justify-between gap-2">
-                        <div class="h-24 overflow-hidden object-cover">
-                            <img src="https://lh3.googleusercontent.com/p/AF1QipPCgnQa4n4rLRsptJjPpp1RD1xHw4p9ZeBkOrY=s1360-w1360-h1020" class="h-full w-auto scale-150 ml-6" alt="" />
+                        <div class="h-12 overflow-hidden object-cover">
+                            <img src="./Asset/W.png" class="h-9 w-auto scale-150 ml-6" alt="" />
                         </div>
                         <h1 class="text-2xl font-bold text-center text-slate-800">Quotation</h1>
 
@@ -408,6 +408,7 @@
 
                   print() {
                       this.screen = "preview";
+                      document.title = ` Wify Systems | Invoice-${this.invoice.invoiceNumber}`
                       setTimeout(() => {
                           window.print();
                       }, 0);
