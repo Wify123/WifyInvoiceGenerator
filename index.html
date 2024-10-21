@@ -81,6 +81,18 @@
                                 rows="3"
                                 class="py-2 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"></textarea>
                         </div>
+                        <div>
+                            <label for="gst" class="block text-sm font-medium text-slate-700">GST No</label>
+                            <input
+                                v-model="invoice.gst"
+                                type="text"
+                                id="gst"
+                                name="gst"
+                                required
+                                class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
+                                aria-describedby="gstError" />
+                            <p id="gstError" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
                     </div>
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Products</h2>
@@ -161,8 +173,8 @@
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div>
-                            <label for="commission" class="block text-sm font-medium text-slate-700">Commission</label>
-                            <div class="mt-1 rounded-md shadow-sm flex items-center gap-2 border border-slate-200 focus-within:outline outline-blue-500 px-2">
+                            <!-- <label for="commission" class="block text-sm font-medium text-slate-700">Commission</label> -->
+                            <!-- <div class="mt-1 rounded-md shadow-sm flex items-center gap-2 border border-slate-200 focus-within:outline outline-blue-500 px-2">
                                 <span class="text-slate-500">₹</span>
                                 <input
                                     v-model="invoice.commission"
@@ -173,7 +185,7 @@
                                     placeholder="0.00"
                                     aria-describedby="commission-currency" />
                                 <span class="text-slate-500" id="commission-currency">INR</span>
-                            </div>
+                            </div> -->
                         </div>
                         <div>
                             <label for="totalAmount" class="block text-sm font-medium text-slate-700">Total Amount</label>
@@ -231,6 +243,10 @@
                             <p class="font-medium">Customer Address:</p>
                             <p class="font-medium max-w-sm leading-relaxed">{{invoice.customerAddress}}</p>
                         </div>
+                        <div class="flex gap-4">
+                            <p class="font-medium">GST No:</p>
+                            <p class="font-medium max-w-sm leading-relaxed">{{invoice.gst}}</p>
+                        </div>
                     </div>
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Products</h2>
@@ -270,11 +286,11 @@
                                             <td class="p-2 border-b border-slate-200">
                                                 <p class="font-medium">{{ invoice.products[index].total}}</p>
                                             </td>
-                                            <td class="p-2 border-b border-slate-200">
+                                            <!-- <td class="p-2 border-b border-slate-200">
                                                 <span @click="removeProduct(index)" class="cursor-pointer">
                                                     <span class=""><i class="bi bi-x-lg"></i></span>
                                                 </span>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </tbody>
                                 </table>
@@ -284,12 +300,12 @@
                     <div class="flex flex-col ml-auto gap-2 max-w-sm font-medium text-sm">
                         <div class="grid grid-cols-2 gap-4">
                             <p class="">Total Amount</p>
-                            <p class="">₹ {{(invoice.totalAmount - invoice.commission).toLocaleString('en-IN')}}</p>
+                            <p class="">₹ {{(invoice.totalAmount).toLocaleString('en-IN')}}</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <!-- <div class="grid grid-cols-2 gap-4">
                             <p class="">Commission</p>
                             <p class="">₹ {{invoice.commission.toLocaleString('en-IN')}}</p>
-                        </div>
+                        </div> -->
                         <hr />
                         <div class="grid grid-cols-2 gap-4 text-lg">
                             <p class="">Grand Total</p>
@@ -335,8 +351,8 @@
                           invoiceDate: "",
                           customerAddress: "",
                           products: [],
-                          commission: 0,
                           totalAmount: 0,
+                          gst:""
                       },
                       minDate: moment().format("YYYY-MM-DD"),
                       screen: "form",
@@ -403,7 +419,7 @@
 
                   calculateInvoiceTotal() {
                       const total = this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0);
-                      this.invoice.totalAmount = total + this.invoice.commission;
+                      this.invoice.totalAmount = total;
                   },
 
                   print() {
@@ -430,7 +446,7 @@
                   },
                   // Use a computed property for invoice total
                   totalInvoiceAmount() {
-                      return this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0) + this.invoice.commission;
+                      return this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0);
                   },
               },
 
