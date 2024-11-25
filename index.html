@@ -419,7 +419,7 @@
                     console.log("loading is working...");
                     this.error = null; // Reset error state
                     try {
-                        const res = await fetch('https://script.google.com/macros/s/AKfycbzHuybCH3XWlMkCc3AsVox9HU1UghUVZuJtlPIB-9V_z-KvKseNBLyxHehp_k03bqiOAQ/exec?page=productPrice');
+                        const res = await fetch('https://script.google.com/macros/s/AKfycbzlePsyJwsc9ufAhnZkhnaJQb_YuhSzv_2fJ3K1Ue7TOJTG5j5sMqVGrYfA6rnJr4vQXQ/exec?page=productPrice');
                         this.productList = await res.json();
                     } catch (error) {
                         console.error("Error fetching products data:", error);
@@ -433,7 +433,7 @@
                     this.error = null; // Reset error state
                     try {
                         console.log("Fetching new invoice number...");
-                        const res = await fetch('https://script.google.com/macros/s/AKfycbzHuybCH3XWlMkCc3AsVox9HU1UghUVZuJtlPIB-9V_z-KvKseNBLyxHehp_k03bqiOAQ/exec?page=newInvoiceNumber');
+                        const res = await fetch('https://script.google.com/macros/s/AKfycbzlePsyJwsc9ufAhnZkhnaJQb_YuhSzv_2fJ3K1Ue7TOJTG5j5sMqVGrYfA6rnJr4vQXQ/exec?page=newInvoiceNumber');
                         const data = await res.json();
                         console.log("Fetched data: ", data);
                         this.invoice.invoiceNumber = data.newInvoice;
