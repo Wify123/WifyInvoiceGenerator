@@ -1,466 +1,577 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Wify Systems | Invoice</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    </head>
-    <body class="">
-        <div id="app" class="bg-slate-100 min-h-screen flex items-center print:items-start justify-center p-4 print:p-0 text-xs">
-            <!-- form  -->
-            <div v-if="screen == 'form'" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl">
-                <div class="mb-4 space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="h-12 object-cover">
-                            <img src="./Asset/W.png" class="h-9 w-auto scale-150 ml-6" alt="" />
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wify Systems | Invoice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+</head>
+
+<body class="">
+    <div id="app"
+        class="bg-slate-100 min-h-screen flex items-center print:items-start justify-center p-4 print:p-0 text-xs">
+
+        <!-- Login Form -->
+        <div v-if="!isLoggedIn" class="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+            <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+                <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+                <form @submit.prevent="login">
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                        <input v-model="username" type="text" id="username" placeholder="Enter Username"
+                            class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required />
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input v-model="password" type="password" id="password" placeholder="Enter Password"
+                            class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required />
+                    </div>
+                    <div v-if="error" class="text-red-500 text-sm mb-4">
+                        <i class="bi bi-exclamation-circle"></i> {{ error }}
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- form  -->
+        <div v-if="screen == 'form' && isLoggedIn" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl">
+            <div class="mb-4 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="h-12 object-cover">
+                        <img src="./Asset/W.png" class="h-9 w-auto scale-150 ml-6" alt="" />
+                    </div>
+                    <h1 class="text-2xl font-bold text-center text-slate-800">Quotation Form</h1>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4">
+                            <p class="text-sm font-medium text-slate-700">Invoice Number:</p>
+                            <p class="text-sm text-gray-500">{{invoice.invoiceNumber}}</p>
                         </div>
-                        <h1 class="text-2xl font-bold text-center text-slate-800">Quotation Form</h1>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-4">
-                                <p class="text-sm font-medium text-slate-700">Invoice Number:</p>
-                                <p class="text-sm text-gray-500">{{invoice.invoiceNumber}}</p>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <p class="text-sm font-medium text-slate-700">Invoice Date:</p>
-                                <p class="text-sm text-gray-500">{{formattedInvoiceDate}}</p>
-                            </div>
+                        <div class="flex items-center gap-4">
+                            <p class="text-sm font-medium text-slate-700">Invoice Date:</p>
+                            <p class="text-sm text-gray-500">{{formattedInvoiceDate}}</p>
                         </div>
                     </div>
-
-                    <hr />
                 </div>
-                <form id="invoiceForm" class="space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6">
-                        <div>
-                            <label for="invoiceNumber" class="block text-sm font-medium text-slate-700">Invoice Number</label>
-                            <input
-                                v-model="invoice.invoiceNumber"
-                                type="text"
-                                id="invoiceNumber"
-                                name="invoiceNumber"
-                                required
-                                disabled
-                                class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1 disabled:bg-slate-200 disabled:text-slate-500"
-                                aria-describedby="invoiceNumberError" />
-                            <p id="invoiceNumberError" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
 
-                        <div>
-                            <label for="invoiceDate" class="block text-sm font-medium text-slate-700">Invoice Date</label>
-                            <input
-                                v-model="invoice.invoiceDate"
-                                type="date"
-                                id="invoiceDate"
-                                name="invoiceDate"
-                                required
-                                class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
-                                :min="minDate" />
+                <hr />
+            </div>
+            <form id="invoiceForm" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6">
+                    <div>
+                        <label for="invoiceNumber" class="block text-sm font-medium text-slate-700">Invoice
+                            Number</label>
+                        <input v-model="invoice.invoiceNumber" type="text" id="invoiceNumber" name="invoiceNumber"
+                            required disabled
+                            class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1 disabled:bg-slate-200 disabled:text-slate-500"
+                            aria-describedby="invoiceNumberError" />
+                        <p id="invoiceNumberError" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+
+                    <div>
+                        <label for="invoiceDate" class="block text-sm font-medium text-slate-700">Invoice Date</label>
+                        <input v-model="invoice.invoiceDate" type="date" id="invoiceDate" name="invoiceDate" required
+                            class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
+                            :min="minDate" />
+                    </div>
+                    <div>
+                        <label for="customerName" class="block text-sm font-medium text-slate-700">Customer Name</label>
+                        <input v-model="invoice.customerName" type="text" id="customerName" name="customerName" required
+                            class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
+                            aria-describedby="customerNameError" />
+                        <p id="customerNameError" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+                    <div>
+                        <label for="customerAddress" class="block text-sm font-medium text-slate-700">Customer
+                            Address</label>
+                        <textarea v-model="invoice.customerAddress" id="customerAddress" name="customerAddress" rows="3"
+                            class="py-2 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"></textarea>
+                    </div>
+                    <div>
+                        <label for="gst" class="block text-sm font-medium text-slate-700">GST No</label>
+                        <input v-model="invoice.gst" type="text" id="gst" name="gst" required
+                            class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
+                            aria-describedby="gstError" />
+                        <p id="gstError" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+                    <div>
+                        <label for="generatedBy" class="block text-sm font-medium text-slate-700">Generated By</label>
+                        <input v-model="invoice.generatedBy" type="text" id="generatedBy" name="generatedBy" required
+                            class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
+                            aria-describedby="generatedByError" />
+                        <p id="generatedByError" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Products</h2>
+                    <div id="productList" class="space-y-4">
+                        <div class="overflow-y-auto w-full">
+                            <table class="mt-4 text-left table-auto w-full">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Product</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Quantity</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Price</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Total</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                            </p>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="" v-for="(product, index) of invoice.products" :key="index">
+                                        <td class="p-2 border-b border-slate-200">
+                                            <select name="product" @change="updateProduct($event, index)"
+                                                :model="invoice.products[index]" id=""
+                                                class="px-4 h-8 w-72 rounded-md border border-slate-200 focus:outline outline-blue-500">
+                                                <option :value="JSON.stringify(item)"
+                                                    v-for="(item, index) of productList">{{item.label}}
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <input name="quantity" v-model="invoice.products[index].quantity"
+                                                type="number"
+                                                class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500" />
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <input name="price" v-model="invoice.products[index].price" disabled
+                                                type="number"
+                                                class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500 disabled:bg-slate-200 disabled:text-slate-500" />
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <input disabled name="total" v-model="invoice.products[index].total"
+                                                type="number"
+                                                class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500 disabled:bg-slate-200 disabled:text-slate-500" />
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <span @click="removeProduct(index)" class="cursor-pointer">
+                                                <span class=""><i class="bi bi-x-lg"></i></span>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div>
-                            <label for="customerName" class="block text-sm font-medium text-slate-700">Customer Name</label>
-                            <input
-                                v-model="invoice.customerName"
-                                type="text"
-                                id="customerName"
-                                name="customerName"
-                                required
-                                class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
-                                aria-describedby="customerNameError" />
-                            <p id="customerNameError" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <div>
-                            <label for="customerAddress" class="block text-sm font-medium text-slate-700">Customer Address</label>
-                            <textarea
-                                v-model="invoice.customerAddress"
-                                id="customerAddress"
-                                name="customerAddress"
-                                rows="3"
-                                class="py-2 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"></textarea>
-                        </div>
-                        <div>
-                            <label for="gst" class="block text-sm font-medium text-slate-700">GST No</label>
-                            <input
-                                v-model="invoice.gst"
-                                type="text"
-                                id="gst"
-                                name="gst"
-                                required
-                                class="h-8 px-4 w-full rounded-md border border-slate-200 focus:outline outline-blue-500 mt-1"
-                                aria-describedby="gstError" />
-                            <p id="gstError" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+                    <button @click="addProduct" type="button" id="addProduct"
+                        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none f">
+                        Add Product
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="commission" class="block text-sm font-medium text-slate-700">Discount %</label>
+                        <div
+                            class="mt-1 rounded-md shadow-sm flex items-center gap-2 border border-slate-200 focus-within:outline outline-blue-500 px-2">
+                            <!-- <span class="text-slate-500">%</span> -->
+                            <input v-model="invoice.commission" type="number" name="commission" id="commission"
+                                class="h-8 rounded-md focus:outline-none w-full" placeholder=""
+                                aria-describedby="commission-currency" />
+                            <span class="text-slate-500" id="commission-currency">%</span>
                         </div>
                     </div>
                     <div>
-                        <h2 class="text-xl font-semibold mb-2">Products</h2>
-                        <div id="productList" class="space-y-4">
-                            <div class="overflow-y-auto w-full">
-                                <table class="mt-4 text-left table-auto w-full">
-                                    <thead>
-                                        <tr>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Product</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Quantity</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Price</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Total</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"></p>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="" v-for="(product, index) of invoice.products" :key="index">
-                                            <td class="p-2 border-b border-slate-200">
-                                                <select
-                                                    name="product"
-                                                    @change="updateProduct($event, index)"
-                                                    :model="invoice.products[index]"
-                                                    id=""
-                                                    class="px-4 h-8 w-72 rounded-md border border-slate-200 focus:outline outline-blue-500">
-                                                    <option :value="JSON.stringify(item)" v-for="(item, index) of productList">{{item.label}}</option>
-                                                </select>
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <input
-                                                    name="quantity"
-                                                    v-model="invoice.products[index].quantity"
-                                                    type="number"
-                                                    class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500" />
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <input
-                                                    name="price"
-                                                    v-model="invoice.products[index].price"
-                                                    disabled
-                                                    type="number"
-                                                    class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500 disabled:bg-slate-200 disabled:text-slate-500" />
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <input
-                                                    disabled
-                                                    name="total"
-                                                    v-model="invoice.products[index].total"
-                                                    type="number"
-                                                    class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500 disabled:bg-slate-200 disabled:text-slate-500" />
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <span @click="removeProduct(index)" class="cursor-pointer">
-                                                    <span class=""><i class="bi bi-x-lg"></i></span>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <button
-                            @click="addProduct"
-                            type="button"
-                            id="addProduct"
-                            class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none f">
-                            Add Product
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div>
-                            <!-- <label for="commission" class="block text-sm font-medium text-slate-700">Commission</label> -->
-                            <!-- <div class="mt-1 rounded-md shadow-sm flex items-center gap-2 border border-slate-200 focus-within:outline outline-blue-500 px-2">
-                                <span class="text-slate-500">₹</span>
-                                <input
-                                    v-model="invoice.commission"
-                                    type="number"
-                                    name="commission"
-                                    id="commission"
-                                    class="h-8 rounded-md focus:outline-none w-full"
-                                    placeholder="0.00"
-                                    aria-describedby="commission-currency" />
-                                <span class="text-slate-500" id="commission-currency">INR</span>
-                            </div> -->
-                        </div>
-                        <div>
-                            <label for="totalAmount" class="block text-sm font-medium text-slate-700">Total Amount</label>
-                            <div class="mt-1 rounded-md shadow-sm flex items-center gap-2 text-xl font-semibold">
-                                <span class="text-slate-500">₹</span>
-                                <span class="">{{invoice.totalAmount.toLocaleString('en-IN') || 0}}</span>
-                                <span class="text-slate-500">INR</span>
-                            </div>
+                        <label for="totalAmount" class="block text-sm font-medium text-slate-700">Total
+                            Amount</label>
+                        <div class="mt-1 rounded-md shadow-sm flex items-center gap-2 text-xl font-semibold">
+                            <span class="text-slate-500">₹</span>
+                            <span class="">{{invoice.grandTotalAmount.toLocaleString('en-IN') ||
+                                0}}</span>
+                            <span class="text-slate-500">INR</span>
                         </div>
                     </div>
-                    <div class="flex items-center justify-end gap-2">
-                        <button
-                            @click="toggleScreen"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Preview
-                        </button>
-                        <button
-                            @click="print"
-                            type="submit"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Generate Invoice
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <!-- preview  -->
-            <div v-if="screen == 'preview'" class="bg-white rounded-lg shadow-xl print:shadow-none p-6 w-full max-w-4xl print:size-full">
-                <div class="mb-4 space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="h-12 object-cover">
-                            <img src="./Asset/W.png" class="h-9 w-auto scale-150 ml-6" alt="" />
-                        </div>
-                        <h1 class="text-2xl font-bold text-center text-slate-800">Quotation</h1>
+                </div>
+                <div class="flex items-center justify-end gap-2">
+                    <button @click="toggleScreen"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Preview
+                    </button>
+                    <button @click="print" type="submit"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Generate Invoice
+                    </button>
+                    <button @click="logout"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Logout
+                    </button>
+                </div>
+            </form>
+        </div>
 
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-4">
-                                <p class="text-sm font-medium text-slate-700">Invoice Number:</p>
-                                <p class="text-sm text-gray-500">{{invoice.invoiceNumber}}</p>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <p class="text-sm font-medium text-slate-700">Invoice Date:</p>
-                                <p class="text-sm text-gray-500">{{formattedInvoiceDate}}</p>
-                            </div>
+        <!-- preview  -->
+        <div v-if="screen == 'preview' && isLoggedIn"
+            class="bg-white rounded-lg shadow-xl print:shadow-none p-6 w-full max-w-4xl print:size-full">
+            <div class="mb-4 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="h-12 object-cover">
+                        <img src="./Asset/W.png" class="h-9 w-auto scale-150 ml-6" alt="" />
+                    </div>
+                    <h1 class="text-2xl font-bold text-center text-slate-800">Quotation</h1>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4">
+                            <p class="text-sm font-medium text-slate-700">Invoice Number:</p>
+                            <p class="text-sm text-gray-500">{{invoice.invoiceNumber}}</p>
                         </div>
+                        <div class="flex items-center gap-4">
+                            <p class="text-sm font-medium text-slate-700">Invoice Date:</p>
+                            <p class="text-sm text-gray-500">{{formattedInvoiceDate}}</p>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+            </div>
+            <form id="invoiceForm" class="space-y-6">
+                <div class="flex flex-col gap-6">
+                    <div class="flex gap-4">
+                        <p class="font-medium">Customer Name:</p>
+                        <p class="font-medium">{{invoice.customerName}}</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <p class="font-medium">Customer Address:</p>
+                        <p class="font-medium max-w-sm leading-relaxed">{{invoice.customerAddress}}</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <p class="font-medium">GST No:</p>
+                        <p class="font-medium max-w-sm leading-relaxed">{{invoice.gst}}</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <p class="font-medium">Generated By:</p>
+                        <p class="font-medium max-w-sm leading-relaxed">{{invoice.generatedBy}}</p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Products</h2>
+                    <div id="productList" class="space-y-4">
+                        <div class="overflow-y-auto w-full">
+                            <table class="mt-4 text-left table-auto w-full">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Product</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Quantity</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Price</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                                Total</p>
+                                        </th>
+                                        <th
+                                            class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                            <p
+                                                class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
+                                            </p>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(product, index) of invoice.products" :key="index">
+                                        <td class="p-2 border-b border-slate-200">
+                                            <p class="font-medium">{{ invoice.products[index].label}}
+                                            </p>
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <p class="font-medium">{{ invoice.products[index].quantity}}
+                                            </p>
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <p class="font-medium">{{ invoice.products[index].price}}
+                                            </p>
+                                        </td>
+                                        <td class="p-2 border-b border-slate-200">
+                                            <p class="font-medium">{{ invoice.products[index].total}}
+                                            </p>
+                                        </td>
+                                        <!-- <td class="p-2 border-b border-slate-200">
+                                            <span @click="removeProduct(index)" class="cursor-pointer">
+                                                <span class=""><i class="bi bi-x-lg"></i></span>
+                                            </span>
+                                        </td> -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col ml-auto gap-2 max-w-sm font-medium text-sm">
+                    <div class="grid grid-cols-2 gap-4">
+                        <p class="">Total Amount</p>
+                        <p class="">₹ {{invoice.totalAmount.toLocaleString('en-IN')}}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <p class="">Total Discount</p>
+                        <p class="">₹ {{invoice.totalDiscount.toLocaleString('en-IN')}}</p>
                     </div>
                     <hr />
+                    <div class="grid grid-cols-2 gap-4 text-lg">
+                        <p class="">Grand Total</p>
+                        <p class="">₹ {{invoice.grandTotalAmount.toLocaleString('en-IN')}}</p>
+                    </div>
                 </div>
-                <form id="invoiceForm" class="space-y-6">
-                    <div class="flex flex-col gap-6">
-                        <div class="flex gap-4">
-                            <p class="font-medium">Customer Name:</p>
-                            <p class="font-medium">{{invoice.customerName}}</p>
-                        </div>
-                        <div class="flex gap-4">
-                            <p class="font-medium">Customer Address:</p>
-                            <p class="font-medium max-w-sm leading-relaxed">{{invoice.customerAddress}}</p>
-                        </div>
-                        <div class="flex gap-4">
-                            <p class="font-medium">GST No:</p>
-                            <p class="font-medium max-w-sm leading-relaxed">{{invoice.gst}}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-semibold mb-2">Products</h2>
-                        <div id="productList" class="space-y-4">
-                            <div class="overflow-y-auto w-full">
-                                <table class="mt-4 text-left table-auto w-full">
-                                    <thead>
-                                        <tr>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Product</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Quantity</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Price</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">Total</p>
-                                            </th>
-                                            <th class="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                                <p class="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500"></p>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(product, index) of invoice.products" :key="index">
-                                            <td class="p-2 border-b border-slate-200">
-                                                <p class="font-medium">{{ invoice.products[index].label}}</p>
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <p class="font-medium">{{ invoice.products[index].quantity}}</p>
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <p class="font-medium">{{ invoice.products[index].price}}</p>
-                                            </td>
-                                            <td class="p-2 border-b border-slate-200">
-                                                <p class="font-medium">{{ invoice.products[index].total}}</p>
-                                            </td>
-                                            <!-- <td class="p-2 border-b border-slate-200">
-                                                <span @click="removeProduct(index)" class="cursor-pointer">
-                                                    <span class=""><i class="bi bi-x-lg"></i></span>
-                                                </span>
-                                            </td> -->
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col ml-auto gap-2 max-w-sm font-medium text-sm">
-                        <div class="grid grid-cols-2 gap-4">
-                            <p class="">Total Amount</p>
-                            <p class="">₹ {{(invoice.totalAmount).toLocaleString('en-IN')}}</p>
-                        </div>
-                        <!-- <div class="grid grid-cols-2 gap-4">
-                            <p class="">Commission</p>
-                            <p class="">₹ {{invoice.commission.toLocaleString('en-IN')}}</p>
-                        </div> -->
-                        <hr />
-                        <div class="grid grid-cols-2 gap-4 text-lg">
-                            <p class="">Grand Total</p>
-                            <p class="">₹ {{invoice.totalAmount.toLocaleString('en-IN')}}</p>
-                        </div>
-                    </div>
-                    <div class="print:hidden flex items-center justify-end gap-2">
-                        <button
-                            @click="toggleScreen"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Close
-                        </button>
-                        <button
-                            @click="print"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Generate Invoice
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="print:hidden flex items-center justify-end gap-2">
+                    <button @click="toggleScreen"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Close
+                    </button>
+                    <button @click="print"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Generate Invoice
+                    </button>
+                </div>
+            </form>
+        </div>
 
-            <div v-if="loading" class="fixed inset-0 bg-black/20 flex items-center justify-center">
-                <div class="w-72 p-12 rounded-lg bg-white flex items-center justify-center">
-                    <div class="flex items-center gap-2">
-                        <span class="animate-spin text-lg">
-                            <i class="bi bi-arrow-repeat"></i>
-                        </span>
-                        <h2 class="text-xl font-semibold text-center animate-pulse">Loading...</h2>
-                    </div>
+        <div v-if="loading && isLoggedIn" class="fixed inset-0 bg-black/20 flex items-center justify-center">
+            <div class="w-72 p-12 rounded-lg bg-white flex items-center justify-center">
+                <div class="flex items-center gap-2">
+                    <span class="animate-spin text-lg">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </span>
+                    <h2 class="text-xl font-semibold text-center animate-pulse">Loading...</h2>
                 </div>
             </div>
         </div>
-        <script type="module">
-          const app = Vue.createApp({
-              data() {
-                  return {
-                      productList: [],
-                      loading: false,
-                      error: null, // Added for error handling
-                      invoice: {
-                          invoiceNumber: "",
-                          customerName: "",
-                          invoiceDate: "",
-                          customerAddress: "",
-                          products: [],
-                          totalAmount: 0,
-                          gst:""
-                      },
-                      minDate: moment().format("YYYY-MM-DD"),
-                      screen: "form",
-                  };
-              },
 
-              methods: {
-                  async getProductsData() {
-                      this.loading = true;
-                      this.error = null; // Reset error state
-                      try {
-                          const res = await fetch('https://script.google.com/macros/s/AKfycbzHuybCH3XWlMkCc3AsVox9HU1UghUVZuJtlPIB-9V_z-KvKseNBLyxHehp_k03bqiOAQ/exec?page=productPrice');
-                          this.productList = await res.json();
-                      } catch (error) {
-                          console.error("Error fetching products data:", error);
-                          this.error = "Failed to load product data."; // Set error message
-                      } finally {
-                          this.loading = false;
-                      }
-                  },
+    </div>
 
-                  async getInvoiceNumber() {
-                      this.error = null; // Reset error state
-                      try {
-                          console.log("Fetching new invoice number...");
-                          const res = await fetch('https://script.google.com/macros/s/AKfycbzHuybCH3XWlMkCc3AsVox9HU1UghUVZuJtlPIB-9V_z-KvKseNBLyxHehp_k03bqiOAQ/exec?page=newInvoiceNumber');
-                          const data = await res.json();
-                          console.log("Fetched data: ", data);
-                          this.invoice.invoiceNumber = data.newInvoice;
-                      } catch (error) {
-                          console.error("Error fetching invoice number:", error);
-                          this.error = "Failed to fetch invoice number."; // Set error message
-                      }
-                  },
+    <script type="module">
+        const app = Vue.createApp({
+            data() {
+                return {
+                    isLoggedIn: false,
+                    productList: [],
+                    loading: false,
+                    error: null, // Added for error handling
+                    invoice: {
+                        invoiceNumber: "",
+                        customerName: "",
+                        invoiceDate: "",
+                        customerAddress: "",
+                        products: [],
+                        totalAmount: 0,
+                        gst: "",
+                        commission: 0,
+                        totalDiscount: 0,
+                        grandTotalAmount: 0,
+                        generatedBy: ""
+                    },
+                    minDate: moment().format("YYYY-MM-DD"),
+                    screen: "form",
+                };
+            },
 
-                  addProduct() {
-                      if (this.productList.length > 0) { // Check if product list is available
-                          this.invoice.products.push({
-                              value: this.productList[0].value,
-                              label: this.productList[0].label,
-                              price: this.productList[0].mrp,
-                              quantity: 1,
-                              total: this.productList[0].mrp,
-                          });
-                      } else {
-                          this.error = "No products available to add."; // Set error message
-                      }
-                  },
+            created() {
+                this.checkSession();
+            },
 
-                  removeProduct(index) {
-                      this.invoice.products.splice(index, 1);
-                  },
+            methods: {
+                async getProductsData() {
+                    this.loading = true;
+                    console.log("loading is working...");
+                    this.error = null; // Reset error state
+                    try {
+                        const res = await fetch('https://script.google.com/macros/s/AKfycbzHuybCH3XWlMkCc3AsVox9HU1UghUVZuJtlPIB-9V_z-KvKseNBLyxHehp_k03bqiOAQ/exec?page=productPrice');
+                        this.productList = await res.json();
+                    } catch (error) {
+                        console.error("Error fetching products data:", error);
+                        this.error = "Failed to load product data."; // Set error message
+                    } finally {
+                        this.loading = false;
+                    }
+                },
 
-                  updateProduct(event, index) {
-                      const selectedProduct = JSON.parse(event.target.value);
-                      console.log("Selected product: ", selectedProduct);
-                      const { label, value, mrp } = selectedProduct;
-                      this.invoice.products[index] = { ...this.invoice.products[index], label, value, price: mrp };
-                  },
+                async getInvoiceNumber() {
+                    this.error = null; // Reset error state
+                    try {
+                        console.log("Fetching new invoice number...");
+                        const res = await fetch('https://script.google.com/macros/s/AKfycbzHuybCH3XWlMkCc3AsVox9HU1UghUVZuJtlPIB-9V_z-KvKseNBLyxHehp_k03bqiOAQ/exec?page=newInvoiceNumber');
+                        const data = await res.json();
+                        console.log("Fetched data: ", data);
+                        this.invoice.invoiceNumber = data.newInvoice;
+                    } catch (error) {
+                        console.error("Error fetching invoice number:", error);
+                        this.error = "Failed to fetch invoice number."; // Set error message
+                    }
+                },
 
-                  calculateProductTotal(product) {
-                      product.total = product.quantity * product.price;
-                  },
+                addProduct() {
+                    if (this.productList.length > 0) { // Check if product list is available
+                        this.invoice.products.push({
+                            value: this.productList[0].value,
+                            label: this.productList[0].label,
+                            price: this.productList[0].mrp,
+                            quantity: 1,
+                            total: this.productList[0].mrp,
+                        });
+                    } else {
+                        this.error = "No products available to add."; // Set error message
+                    }
+                },
 
-                  calculateInvoiceTotal() {
-                      const total = this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0);
-                      this.invoice.totalAmount = total;
-                  },
+                removeProduct(index) {
+                    this.invoice.products.splice(index, 1);
+                },
 
-                  print() {
-                      this.screen = "preview";
-                      document.title = ` Wify Systems | Invoice-${this.invoice.invoiceNumber}`
-                      setTimeout(() => {
-                          window.print();
-                      }, 0);
-                  },
+                updateProduct(event, index) {
+                    const selectedProduct = JSON.parse(event.target.value);
+                    console.log("Selected product: ", selectedProduct);
+                    const { label, value, mrp } = selectedProduct;
+                    this.invoice.products[index] = { ...this.invoice.products[index], label, value, price: mrp };
+                },
 
-                  toggleScreen() {
-                      this.screen = this.screen === "form" ? "preview" : "form";
-                  },
-              },
+                calculateProductTotal(product) {
+                    product.total = product.quantity * product.price;
+                },
 
-              mounted() {
-                  this.getInvoiceNumber();
-                  this.getProductsData();
-              },
+                calculateInvoiceTotal() {
+                    const total = this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0);
+                    this.invoice.totalAmount = total;
+                },
 
-              computed: {
-                  formattedInvoiceDate() {
-                      return this.invoice.invoiceDate ? moment(this.invoice.invoiceDate, "YYYY-MM-DD").format("D MMM, YYYY") : "";
-                  },
-                  // Use a computed property for invoice total
-                  totalInvoiceAmount() {
-                      return this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0);
-                  },
-              },
+                setInvoiceDateToToday() {
+                    if (!this.invoice.invoiceDate) {
+                        this.invoice.invoiceDate = moment().format("YYYY-MM-DD");
+                    }
+                },
 
-              watch: {
-                  invoice: {
-                      deep: true,
-                      handler() {
-                          this.invoice.products.forEach(product => this.calculateProductTotal(product));
-                          this.invoice.totalAmount = this.totalInvoiceAmount; // Update the total amount reactively
-                      }
-                  }
-              }
-          }).mount("#app");
-        </script>
+                print() {
+                    this.screen = "preview";
+                    document.title = ` Wify Systems | Invoice-${this.invoice.invoiceNumber}`;
+                    setTimeout(() => {
+                        window.print();
+                    }, 0);
+                },
 
-    </body>
+                toggleScreen() {
+                    this.screen = this.screen === "form" ? "preview" : "form";
+                },
+
+                login() {
+                    // Simulated API Call
+                    if (this.username === 'admin' && this.password === 'password') {
+                        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours
+                        localStorage.setItem('session', JSON.stringify({ username: this.username, expiry }));
+                        this.isLoggedIn = true;
+                        this.getInvoiceNumber();
+                        this.getProductsData();
+                        this.setInvoiceDateToToday();
+                        this.error = null;
+                    } else {
+                        this.error = 'Invalid username or password.';
+                    }
+                },
+
+                logout() {
+                    localStorage.removeItem('session');
+                    this.isLoggedIn = false;
+                },
+
+                checkSession() {
+                    const session = localStorage.getItem('session');
+                    if (session) {
+                        const sessionData = JSON.parse(session);
+                        const now = new Date().getTime();
+                        if (now < sessionData.expiry) {
+                            this.isLoggedIn = true;
+                        } else {
+                            localStorage.removeItem('session');
+                            this.isLoggedIn = false;
+                        }
+                    }
+                },
+
+            },
+
+            mounted() {
+                this.checkSession();
+
+                if(this.isLoggedIn){
+                    this.getInvoiceNumber();
+                    this.getProductsData();
+                    this.setInvoiceDateToToday();
+                }
+
+            },
+
+            computed: {
+                formattedInvoiceDate() {
+                    return this.invoice.invoiceDate ? moment(this.invoice.invoiceDate, "YYYY-MM-DD").format("D MMM, YYYY") : "";
+                },
+
+                totalInvoiceAmount() {
+                    return this.invoice.products.reduce((sum, product) => sum + product.quantity * product.price, 0);
+                },
+            },
+
+            watch: {
+                invoice: {
+                    deep: true,
+                    handler() {
+                        this.invoice.products.forEach(product => this.calculateProductTotal(product));
+                        this.invoice.totalAmount = this.totalInvoiceAmount; // Update the total amount reactively
+                        this.invoice.totalDiscount = this.invoice.totalAmount - (this.invoice.totalAmount * (1 - this.invoice.commission / 100));
+                        this.invoice.grandTotalAmount = this.invoice.totalAmount - this.invoice.totalDiscount;
+                    }
+                },
+
+                'invoice.invoiceDate'(newDate) {
+                    if (!newDate) {
+                        this.setInvoiceDateToToday(); // Reset date to today if cleared
+                    }
+                },
+            }
+        }).mount("#app");
+    </script>
+
+</body>
+
 </html>
