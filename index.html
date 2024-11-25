@@ -163,8 +163,8 @@
                                             </select>
                                         </td>
                                         <td class="p-2 border-b border-slate-200">
-                                            <input name="quantity" v-model="invoice.products[index].quantity"
-                                                type="number"
+                                            <input name="quantity" @input="validateQuantity"
+                                                v-model="invoice.products[index].quantity" min="1" type="number"
                                                 class="px-4 h-8 w-32 rounded-md border border-slate-200 focus:outline outline-blue-500" />
                                         </td>
                                         <td class="p-2 border-b border-slate-200">
@@ -195,14 +195,21 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                         <label for="commission" class="block text-sm font-medium text-slate-700">Discount %</label>
-                        <div
-                            class="mt-1 rounded-md shadow-sm flex items-center gap-2 border border-slate-200 focus-within:outline outline-blue-500 px-2">
+                        <div class="mt-1 rounded-md shadow-sm flex items-center gap-2 border border-slate-200 focus-within:outline outline-blue-500 px-2"
+                            :class="{
+                                'border-red-500': invoice.commission < 0 || invoice.commission > 100,
+                                'border-slate-200': invoice.commission >= 0 && invoice.commission <= 100
+                            }">
                             <!-- <span class="text-slate-500">%</span> -->
-                            <input v-model="invoice.commission" type="number" name="commission" id="commission"
-                                class="h-8 rounded-md focus:outline-none w-full" placeholder=""
+                            <input v-model="invoice.commission" @input="validateCommission" type="number"
+                                name="commission" id="commission" min="0" max="100"
+                                class="h-8 rounded-md focus:outline-none w-full" placeholder="20"
                                 aria-describedby="commission-currency" />
                             <span class="text-slate-500" id="commission-currency">%</span>
                         </div>
+                        <p v-if="invoice.commission < 0 || invoice.commission > 100" class="text-red-500 text-sm mt-1">
+                            Please enter a value between 0 and 100.
+                        </p>
                     </div>
                     <div>
                         <label for="totalAmount" class="block text-sm font-medium text-slate-700">Total
@@ -477,6 +484,22 @@
                     this.invoice.totalAmount = total;
                 },
 
+                validateCommission() {
+                    if (this.invoice.commission < 0) {
+                        this.invoice.commission = 0;
+                    } else if (this.invoice.commission > 100) {
+                        this.invoice.commission = 100;
+                    }
+                },
+
+                validateQuantity() {
+                    this.invoice.products.forEach((product) => {
+                        if (product.quantity <= 0) {
+                            product.quantity = 1;
+                        }
+                    });
+                },
+
                 setInvoiceDateToToday() {
                     if (!this.invoice.invoiceDate) {
                         this.invoice.invoiceDate = moment().format("YYYY-MM-DD");
@@ -534,7 +557,7 @@
             mounted() {
                 this.checkSession();
 
-                if(this.isLoggedIn){
+                if (this.isLoggedIn) {
                     this.getInvoiceNumber();
                     this.getProductsData();
                     this.setInvoiceDateToToday();
@@ -557,9 +580,9 @@
                     deep: true,
                     handler() {
                         this.invoice.products.forEach(product => this.calculateProductTotal(product));
-                        this.invoice.totalAmount = this.totalInvoiceAmount; // Update the total amount reactively
-                        this.invoice.totalDiscount = this.invoice.totalAmount - (this.invoice.totalAmount * (1 - this.invoice.commission / 100));
-                        this.invoice.grandTotalAmount = this.invoice.totalAmount - this.invoice.totalDiscount;
+                        this.invoice.totalAmount = (this.totalInvoiceAmount).toFixed(2); // Update the total amount reactively
+                        this.invoice.totalDiscount = (this.invoice.totalAmount - (this.invoice.totalAmount * (1 - this.invoice.commission / 100))).toFixed(2);
+                        this.invoice.grandTotalAmount = (this.invoice.totalAmount - this.invoice.totalDiscount).toFixed(2);
                     }
                 },
 
