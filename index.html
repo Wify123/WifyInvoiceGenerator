@@ -863,7 +863,7 @@
           },
 
           calculateProductTotal(product) {
-            product.total = product.quantity * product.price;
+            product.total = (product.quantity * product.price).toFixed(2);
           },
 
           calculateInvoiceTotal() {
@@ -943,6 +943,9 @@
           },
 
           print() {
+            window.onafterprint = function () {
+              window.location.href = '/';
+            };
             this.screen = "preview";
             document.title = ` Wify Systems | Quotation-${this.invoice.invoiceNumber}`;
             setTimeout(() => {
