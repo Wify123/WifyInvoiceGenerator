@@ -825,8 +825,7 @@
                 "https://wifyapi.vercel.app/getInvoiceNumber"
               );
               let responce = await res.json();
-              const data = responce.data;
-              this.invoice.invoiceNumber = data.newInvoice;
+              this.invoice.invoiceNumber = responce.newInvoice;
             } catch (error) {
               console.error("Error fetching invoice number:", error);
               this.error =
@@ -1009,12 +1008,12 @@
           this.checkSession();
 
           if (this.isLoggedIn) {
+            this.getInvoiceNumber();
             const check = localStorage.getItem("productList");
             if (check) {
               const productList = JSON.parse(check);
               this.productList = productList.productList;
             } else {
-              this.getInvoiceNumber();
               this.getProductsData();
             }
             this.setInvoiceDateToToday();
