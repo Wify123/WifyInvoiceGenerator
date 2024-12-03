@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wify Systems | Quotation</title>
+    <link rel="icon" href="./Asset/favicon.ico" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link
@@ -701,30 +702,29 @@
                   <li>
                     Cancellation: 10% of advance retained for cancellations.
                   </li>
+                  <li>
+                    Declaration:
+                    <ul class="list-disc list-inside ml-6">
+                      <li>
+                        We hereby confirm that the prices, terms, and conditions
+                        outlined in this quotation are accurate and binding,
+                        based on the current scope of work and materials
+                        specified. Any changes to the scope, materials, or
+                        conditions may result in a revision of the quoted price.
+                      </li>
+                      <li>
+                        By accepting this quotation, the client agrees to the
+                        terms and conditions specified herein, including payment
+                        schedules, installation requirements, and warranties.
+                        The client acknowledges that they have read, understood,
+                        and accepted these terms.
+                      </li>
+                    </ul>
+                  </li>
+                  <li>Subject to Pune Jurisdiction.</li>
                 </ul>
               </div>
             </div>
-          </section>
-
-          <section class="mb-1 space-y-2">
-            <h2 class="text-lg font-bold mb-3">Declaration</h2>
-            <p class="text-gray-700">
-              We hereby confirm that the prices, terms, and conditions outlined
-              in this quotation are accurate and binding, based on the current
-              scope of work and materials specified. Any changes to the scope,
-              materials, or conditions may result in a revision of the quoted
-              price.
-            </p>
-            <p class="text-gray-700 mt-2">
-              By accepting this quotation, the client agrees to the terms and
-              conditions specified herein, including payment schedules,
-              installation requirements, and warranties. The client acknowledges
-              that they have read, understood, and accepted these terms.
-            </p>
-          </section>
-
-          <section class="text-center text-sm text-gray-500 mt-6">
-            Subject to Pune Jurisdiction.
           </section>
         </footer>
 
@@ -765,11 +765,11 @@
       </div>
 
       <!-- Invoice Table -->
-      <div v-if="isFormList && isLoggedIn">
-        <h2 class="text-lg font-semibold mb-4">Invoice List</h2>
+      <div v-if="isFormList && isLoggedIn" class="w-full max-w-3xl space-y-4">
+        <h2 class="text-lg font-semibold mb-4 w-full max-w-xl">Invoice List</h2>
         <div class="overflow-x-auto">
           <table
-            class="min-w-full table-auto border-collapse border border-gray-200"
+            class="min-w-full table-auto border-collapse border border-gray-200 bg-white rounded-lg overflow-hidden"
           >
             <thead
               class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal"
@@ -811,6 +811,20 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="flex items-center justify-end gap-2">
+          <button
+            @click="goToScreen('form')"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Home
+          </button>
+          <button
+            @click="logout"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Logout
+          </button>
         </div>
       </div>
 
@@ -1072,12 +1086,6 @@
 
             <div class="flex justify-end items-center gap-4">
               <button
-                @click="logout"
-                class="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600"
-              >
-                Logout
-              </button>
-              <button
                 @click="cancelEdit"
                 class="bg-gray-500 text-white py-1 px-4 rounded hover:bg-gray-600"
               >
@@ -1094,12 +1102,310 @@
           </form>
         </div>
       </div>
+
+      <!-- selectedPreview  -->
+      <div
+        v-if="isSelectedPreview && isLoggedIn"
+        class="bg-white rounded-lg shadow-xl print:shadow-none p-6 w-full max-w-4xl print:size-full"
+      >
+        <header class="mb-1 space-y-2">
+          <!-- Grid with 3 columns -->
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Logo Section -->
+            <div class="flex justify-start items-center ml-20">
+              <img
+                src="./Asset/W.png"
+                class="h-12 w-auto scale-150"
+                alt="Wify Logo"
+              />
+            </div>
+
+            <!-- Company Details Section -->
+            <div class="text-center col-span-1">
+              <p class="text-xl font-semibold">Wify Systems Pvt Ltd</p>
+              <p class="text-gray-600">Kotwal Nagar Kiwale-412101</p>
+              <p class="text-gray-600">
+                Phone: <span class="font-medium">7249363944</span>
+              </p>
+              <p class="text-gray-600">
+                Email:
+                <a
+                  href="mailto:wifysystems@gmail.com"
+                  class="highlight underline"
+                  >wifysystems@gmail.com</a
+                >
+              </p>
+              <p class="text-gray-600">GSTIN: 27AACCW6139K1ZX</p>
+              <p class="text-gray-600">State: Maharashtra</p>
+            </div>
+
+            <!-- Quotation Information Section -->
+            <div class="flex flex-col items-center justify-center space-y-2">
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="col-span-2 text-3xl font-bold title text-center">
+                  Quotation
+                </div>
+
+                <!-- Row 1 -->
+                <div class="col-span-1 text-gray-700 text-left">
+                  Quotation No.
+                </div>
+                <div class="col-span-1 font-semibold text-left">
+                  {{selectedInvoice.invoiceNumber}}
+                </div>
+
+                <!-- Row 2 -->
+                <div class="col-span-1 text-gray-700 text-left">
+                  Quotation Date:
+                </div>
+                <div class="col-span-1 font-semibold text-left">
+                  {{formattedInvoiceDate}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="border-t-4 border-gray-600 w-full" />
+        </header>
+
+        <!-- Estimate Details Section -->
+        <section class="mb-1 space-y-2">
+          <h2 class="text-lg font-bold">Estimate Details</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col space-y-1 text-sm p-1">
+              <div class="font-bold text-black">
+                {{selectedInvoice.customerName}}
+              </div>
+              <div class="text-gray-700">
+                {{selectedInvoice.customerAddress}}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-1 text-sm">
+              <div class="col-span-1"></div>
+              <div class="col-span-2 text-gray-700 text-left">GST No :</div>
+              <div class="col-span-1 font-semibold text-black text-left">
+                {{selectedInvoice.gst}}
+              </div>
+
+              <div class="col-span-1"></div>
+              <div class="col-span-2 text-gray-700 text-left">
+                Generated By:
+              </div>
+              <div class="col-span-1 font-semibold text-black text-left">
+                {{selectedInvoice.generatedBy}}
+              </div>
+
+              <div class="col-span-1"></div>
+              <div class="col-span-2 text-gray-700 text-left">
+                Place of Supply:
+              </div>
+              <div class="col-span-1 font-semibold text-black text-left">
+                Pune
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Items Table -->
+        <section id="productList" class="mb-1 space-y-2">
+          <table
+            class="w-full text-sm text-left border-collapse border border-gray-pdf"
+          >
+            <thead
+              class="bg-gray-200 text-gray-800 uppercase text-xs font-semibold"
+            >
+              <tr>
+                <th class="border border-gray-pdf px-4 py-2 text-center">#</th>
+                <th class="border border-gray-pdf px-4 py-2 text-left">
+                  Item Name
+                </th>
+                <th class="border border-gray-pdf px-4 py-2 text-center">
+                  HSN Code
+                </th>
+                <th class="border border-gray-pdf px-4 py-2 text-center">
+                  Qty
+                </th>
+                <th class="border border-gray-pdf px-4 py-2 text-center">
+                  Price/Unit
+                </th>
+                <th class="border border-gray-pdf px-4 py-2 text-center">
+                  Amount
+                </th>
+                <th class="border border-gray-pdf px-4 py-2 text-center">
+                  Discount %
+                </th>
+                <th class="border border-gray-pdf px-4 py-2 text-center">
+                  Total Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(product, index) of selectedInvoice.products"
+                :key="index"
+                class="odd:bg-white even:bg-gray-50"
+              >
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  {{index + 1}}
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-left">
+                  {{ selectedInvoice.products[index].label}}
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  8536
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  {{ selectedInvoice.products[index].quantity}}
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  {{ selectedInvoice.products[index].price}}
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  {{ selectedInvoice.products[index].total}}
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  {{selectedInvoice.commission}}
+                </td>
+                <td class="border border-gray-pdf px-4 py-2 text-center">
+                  {{(selectedInvoice.products[index].total * (1 -
+                  (selectedInvoice.commission/100))).toFixed(2)}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Summary Section -->
+        <section class="mb-1 space-y-2">
+          <div class="grid grid-cols-8 gap-1 text-sm mb-1">
+            <!-- Row 1 -->
+            <div class="col-span-5"></div>
+            <div class="col-span-2 text-gray-700 text-left">Total Amount</div>
+            <div class="col-span-1 font-semibold text-black text-right mr-4">
+              ₹ {{selectedInvoice.totalAmount.toLocaleString('en-IN')}}
+            </div>
+
+            <!-- Row 2 -->
+            <div class="col-span-5"></div>
+            <div class="col-span-2 text-gray-700 text-left">Total Discount</div>
+            <div class="col-span-1 font-semibold text-black text-right mr-4">
+              ₹ {{selectedInvoice.totalDiscount.toLocaleString('en-IN')}}
+            </div>
+
+            <!-- Row 3 -->
+            <div class="col-span-5"></div>
+            <div class="col-span-2 text-gray-700 text-left">Grand Total</div>
+            <div class="col-span-1 font-semibold text-black text-right mr-4">
+              ₹ {{selectedInvoice.grandTotalAmount.toLocaleString('en-IN')}}
+            </div>
+          </div>
+          <hr class="border-t-4 border-gray-600 w-full hidden print:block" />
+        </section>
+
+        <footer class="hidden print:block">
+          <!-- Bank Details and Terms Section -->
+          <section class="mb-1 space-y-2">
+            <div class="grid grid-cols-2 gap-6">
+              <!-- Bank Details -->
+              <div class="flex flex-col space-y-1 text-sm">
+                <h2 class="text-lg font-bold mb-3">Bank Details</h2>
+                <div class="grid grid-cols-3">
+                  <div class="col-span-1 text-gray-700">Name:</div>
+                  <div class="col-span-2 font-semibold">HDFC Bank</div>
+                  <div class="col-span-1 text-gray-700">Account No.:</div>
+                  <div class="col-span-2 font-semibold">50200053375703</div>
+                  <div class="col-span-1 text-gray-700">IFSC Code:</div>
+                  <div class="col-span-2 font-semibold">HDFC0009606</div>
+                  <div class="col-span-1 text-gray-700">Branch:</div>
+                  <div class="col-span-2 font-semibold">Ravet</div>
+                  <div class="col-span-1 text-gray-700">Account Holder:</div>
+                  <div class="col-span-2 font-semibold">
+                    Wify Systems Pvt Ltd
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terms and Conditions -->
+              <div>
+                <h2 class="text-lg font-bold mb-3">Terms and Conditions</h2>
+                <ul class="list-disc list-inside text-gray-700">
+                  <li>
+                    Quotation Validity: Valid for 14 days from the issue date.
+                  </li>
+                  <li>
+                    Installation: Requires a stable internet connection on-site.
+                  </li>
+                  <li>Warranty: 2 years on manufacturing defects only.</li>
+                  <li>
+                    Civil/Carpentry Work: Customer's responsibility and cost.
+                  </li>
+                  <li>
+                    Material: Only our supplied materials will be installed.
+                  </li>
+                  <li>GST: Applicable as per current rates.</li>
+                  <li>
+                    Payment Terms:
+                    <ul class="list-disc list-inside ml-6">
+                      <li>50% to confirm the order.</li>
+                      <li>40% before installation.</li>
+                      <li>10% after installation.</li>
+                    </ul>
+                  </li>
+                  <li>
+                    Late Payments: 12% interest per annum on overdue payments.
+                  </li>
+                  <li>
+                    Cancellation: 10% of advance retained for cancellations.
+                  </li>
+                  <li>
+                    Declaration:
+                    <ul class="list-disc list-inside ml-6">
+                      <li>
+                        We hereby confirm that the prices, terms, and conditions
+                        outlined in this quotation are accurate and binding,
+                        based on the current scope of work and materials
+                        specified. Any changes to the scope, materials, or
+                        conditions may result in a revision of the quoted price.
+                      </li>
+                      <li>
+                        By accepting this quotation, the client agrees to the
+                        terms and conditions specified herein, including payment
+                        schedules, installation requirements, and warranties.
+                        The client acknowledges that they have read, understood,
+                        and accepted these terms.
+                      </li>
+                    </ul>
+                  </li>
+                  <li>Subject to Pune Jurisdiction.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </footer>
+
+        <div class="print:hidden flex items-center justify-end gap-2">
+          <button
+            @click="goToScreen('form')"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Edit
+          </button>
+          <button
+            @click="submitAndPrint"
+            type="submit"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Generate Quotation
+          </button>
+        </div>
+      </div>
     </div>
 
     <script type="module">
       const app = Vue.createApp({
         data() {
           return {
+            isSelectedPreview: false,
             isPreviewView: false,
             isFormView: true,
             isEditing: false,
@@ -1260,7 +1566,7 @@
                 body: JSON.stringify({
                   username: user,
                   invoice: this.invoice,
-                  type : true,
+                  type: true,
                 }),
               })
                 .then((response) => {
@@ -1289,6 +1595,19 @@
             };
             this.goToScreen("preview");
             document.title = ` Wify Systems | Quotation-${this.invoice.invoiceNumber}`;
+            setTimeout(() => {
+              window.print();
+            }, 0);
+          },
+
+          printInvoice(invoice) {
+            this.selectedInvoice = { ...invoice };
+
+            window.onafterprint = function () {
+              window.location.href = "/";
+            };
+            this.goToScreen("selectPreview");
+            document.title = ` Wify Systems | Quotation-${this.selectedInvoice.invoiceNumber}`;
             setTimeout(() => {
               window.print();
             }, 0);
@@ -1346,10 +1665,12 @@
 
           async getInvoices() {
             try {
+              this.loading = true;
               const session = localStorage.getItem("session");
               if (!session) {
                 console.error("No session found!");
                 this.error = "Please log in.";
+                this.loading = false;
                 return;
               }
 
@@ -1376,9 +1697,12 @@
               this.invoices = responseData.data;
 
               console.log("Invoices loaded:", this.invoices);
+
+              this.loading = false;
             } catch (error) {
               console.error("Error fetching Invoices data:", error);
               this.error = "Failed to load invoices data.";
+              this.loading = false;
             }
           },
 
@@ -1498,7 +1822,7 @@
                 body: JSON.stringify({
                   username: user,
                   invoice: this.selectedInvoice,
-                  type : false,
+                  type: false,
                 }),
               })
                 .then((response) => {
@@ -1529,16 +1853,25 @@
               this.isFormList = true;
               this.isPreviewView = false;
               this.isEditing = false;
+              this.isSelectedPreview = false;
             } else if (screen == "preview") {
               this.isFormView = false;
               this.isPreviewView = true;
               this.isFormList = false;
               this.isEditing = false;
+              this.isSelectedPreview = false;
             } else if (screen == "form") {
               this.isFormView = true;
               this.isPreviewView = false;
               this.isFormList = false;
               this.isEditing = false;
+              this.isSelectedPreview = false;
+            } else if (screen == "selectPreview") {
+              this.isEditing = false;
+              this.isFormList = false;
+              this.isFormView = false;
+              this.isPreviewView = false;
+              this.isSelectedPreview = true;
             }
           },
         },
