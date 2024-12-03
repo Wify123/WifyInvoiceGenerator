@@ -1692,11 +1692,11 @@
 
               const responseData = await response.json();
 
-              console.log("response", responseData.data);
+              // console.log("response", responseData.data);
 
               this.invoices = responseData.data;
 
-              console.log("Invoices loaded:", this.invoices);
+              // console.log("Invoices loaded:", this.invoices);
 
               this.loading = false;
             } catch (error) {
@@ -1715,14 +1715,14 @@
           },
 
           saveInvoice() {
-            console.log("Invoice saved");
+            // console.log("Invoice saved");
 
             // Check if the selected invoice exists in the object
             if (this.selectedInvoice && this.selectedInvoice.invoiceNumber) {
               this.invoices[this.selectedInvoice.invoiceNumber] = {
                 ...this.selectedInvoice,
               };
-              console.log("Updated invoices:", this.invoices);
+              // console.log("Updated invoices:", this.invoices);
             } else {
               console.warn("Selected invoice is invalid.");
             }
@@ -1834,7 +1834,7 @@
                 })
                 .then((data) => {
                   this.saveInvoice();
-                  console.log("Invoice submitted successfully:", data);
+                  // console.log("Invoice submitted successfully:", data);
                 });
 
               alert("Form submitted successfully!");
@@ -1847,7 +1847,7 @@
           },
 
           goToScreen(screen) {
-            console.log("screen : " + screen);
+            // console.log("screen : " + screen);
             if (screen == "list") {
               this.isFormView = false;
               this.isFormList = true;
